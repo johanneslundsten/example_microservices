@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcService";
+
+package account;
+import "google/protobuf/struct.proto";
+
+// The greeting service definition.
+service AccountsService {
+  // Sends a greeting
+  rpc Create (CreateAccount) returns (Account);
+  rpc Update (Account) returns (Account);
+  rpc Delete (AccountId) returns (Account);
+  rpc Get (AccountId) returns (NullableAccount);
+
+  // Retrieves a list of all entities
+  rpc GetAll (Empty) returns (Accounts);
+}
+
+// The request message containing the user's name.
+message CreateAccount {
+  string name = 1;
+}
+message AccountId {
+  string id = 1;
+}
+
+// The response message containing the greetings.
+message Account {
+  string id = 1;
+  string name = 2;
+}
+
+// The request message for retrieving entities (Empty)
+message Empty {}
+
+// The response message containing a list of entities.
+message Accounts {
+  repeated Account entities = 1;
+}
+
+message NullableAccount {
+  oneof Kind {
+    google.protobuf.NullValue Null = 1;
+    Account account = 2;
+  }
+}

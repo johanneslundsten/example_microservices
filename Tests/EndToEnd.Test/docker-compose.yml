@@ -1,0 +1,40 @@
+services:
+  external-api:
+    build:
+      context: ../..
+      dockerfile: Microservices/ExternalApi/Dockerfile
+    ports:
+      - "5002:5002"
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - GrpcServiceWithDbGrpcClientSettings__Address=http://grpc-service-with-db:5001
+    depends_on:
+      - grpc-service-with-db
+  grpc-service-with-db:
+    build:
+      context: ../..
+      dockerfile: Microservices/GrpcServiceWithDb/Dockerfile
+    ports:
+      - "5001:5001"
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=grpc-service-with-db;Username=postgres;Password=password
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:alpine3.15
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=grpc-service-with-db
+      - PGPORT=5432
+    healthcheck:
+      test: "pg_isready --username=postgres && psql --username=postgres --list"
+      timeout: 1s
+      retries: 20
+      interval: 1s
