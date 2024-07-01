@@ -10,6 +10,9 @@ using Xunit.Abstractions;
 
 namespace GrpcServiceWithDb.Tests;
 
+// The main purpose of this class is to show how to manage state in testing while writing clear and simple tests
+// that only test one thing. Look at how the inner class WithAccount is used to setup an Account and then how the tests
+// in there only test one thing 
 public class AccountServiceTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly AccountsService.AccountsServiceClient _accountClient;
